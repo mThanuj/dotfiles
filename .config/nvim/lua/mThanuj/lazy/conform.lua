@@ -13,10 +13,16 @@ return {
 				typescript = { "prettier" },
 				elixir = { "mix" },
 				html = { "prettier" },
+				sql = { "pgformatter" },
 			},
 			formatters = {
 				["clang-format"] = {
 					prepend_args = { "-style=file", "-fallback-style=LLVM" },
+				},
+				["pgformatter"] = {
+					command = "pg_format",
+					args = { "-" },
+					stdin = true,
 				},
 			},
 		})

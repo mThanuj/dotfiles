@@ -31,8 +31,8 @@ else
 fi
 
 export NVM_DIR="$HOME/.config/nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" 
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 HISTSIZE=10000
 SAVEHIST=10000
@@ -83,3 +83,10 @@ setopt INC_APPEND_HISTORY
 setopt HIST_IGNORE_DUPS
 setopt HIST_FIND_NO_DUPS
 setopt HIST_REDUCE_BLANKS
+
+alias ls='eza --icons -1 --group-directories-first'
+
+. "$HOME/.atuin/bin/env"
+
+eval "$(atuin init zsh)"
+bindkey '^H' backward-kill-word

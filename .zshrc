@@ -89,4 +89,6 @@ alias ls='eza --icons -1 --group-directories-first'
 . "$HOME/.atuin/bin/env"
 
 eval "$(atuin init zsh)"
+eval "$(atuin init zsh --disable-up-arrow)"
+
 bindkey '^H' backward-kill-word

@@ -18,6 +18,16 @@ return {
 			"saghen/blink.cmp",
 		},
 		config = function()
+			local lspconfig = require("lspconfig")
+
+			lspconfig.util.default_config = vim.tbl_extend("force", lspconfig.util.default_config, {
+				capabilities = vim.tbl_deep_extend(
+					"force",
+					vim.lsp.protocol.make_client_capabilities(),
+					require("lsp-file-operations").default_capabilities()
+				),
+			})
+
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("kickstart-lsp-attach", { clear = true }),
 				callback = function(event)
@@ -38,6 +48,7 @@ return {
 						"Open Workspace Symbols"
 					)
 					map("<leader>gt", require("telescope.builtin").lsp_type_definitions, "[G]oto [T]ype Definition")
+
 					---@param client vim.lsp.Client
 					---@param method vim.lsp.protocol.Method
 					---@param bufnr? integer
@@ -119,7 +130,6 @@ return {
 				},
 			})
 
-			local capabilities = require("blink.cmp").get_lsp_capabilities()
 			local servers = {
 				gopls = {},
 				pyright = {},
@@ -135,6 +145,10 @@ return {
 					},
 				},
 				yamlls = {},
+				dockerls = {},
+				bashls = {},
+				zls = {},
+				angularls = {},
 			}
 
 			local ensure_installed = vim.tbl_keys(servers or {})
@@ -144,18 +158,28 @@ return {
 				"prettier",
 			})
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
+			require("mason-lspconfig").setup()
 
-			require("mason-lspconfig").setup({
-				ensure_installed = {},
-				automatic_installation = false,
-				handlers = {
-					function(server_name)
-						local server = servers[server_name] or {}
-						server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-						require("lspconfig")[server_name].setup(server)
-					end,
-				},
-			})
+			local capabilities = require("blink.cmp").get_lsp_capabilities()
+
+			for server_name, server_config in pairs(servers) do
+				local opts = vim.tbl_deep_extend("force", {
+					capabilities = capabilities,
+				}, server_config)
+
+				if server_name == "ts_ls" then
+					opts.root_dir = function(fname)
+						local util = require("lspconfig.util")
+						local angular_root = util.root_pattern("angular.json")(fname)
+						if angular_root then
+							return nil
+						end
+						return util.root_pattern("tsconfig.json", "package.json", ".git")(fname)
+					end
+				end
+
+				vim.lsp.config[server_name] = opts
+			end
 		end,
 	},
 	{
@@ -194,6 +218,8 @@ return {
 				javascriptreact = { "prettier" },
 				json = { "prettier" },
 				yaml = { "yamlfmt" },
+				dockerfile = { "shfmt" },
+				bash = { "shfmt" },
 			},
 		},
 	},

@@ -85,6 +85,8 @@ setopt HIST_FIND_NO_DUPS
 setopt HIST_REDUCE_BLANKS
 
 alias ls='eza --icons -1 --group-directories-first'
+alias vi='nvim'
+alias ta='tmux attach'
 
 . "$HOME/.atuin/bin/env"
 

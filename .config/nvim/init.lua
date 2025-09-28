@@ -1,47 +1,60 @@
-require("kickstart.options")
-require("kickstart.keymaps")
-require("kickstart.autocmds")
-
+-- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-	local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
-	if vim.v.shell_error ~= 0 then
-		error("Error cloning lazy.nvim:\n" .. out)
+if not vim.loop.fs_stat(lazypath) then
+	vim.fn.system({
+		"git",
+		"clone",
+		"--filter=blob:none",
+		"https://github.com/folke/lazy.nvim.git",
+		"--branch=stable",
+		lazypath,
+	})
+end
+vim.opt.rtp:prepend(lazypath)
+
+require("core.options")
+
+-- Plugins
+require("plugins")
+
+-- LSP
+require("lsp")
+
+-- Core configs
+require("core.keymaps")
+require("core.autocmds")
+
+local COLORS = {
+	ROSE_PINE = "rose-pine",
+	ROSE_PINE_MOON = "rose-pine-moon",
+	TOKYONIGHT = "tokyonight",
+	CATPPUCCIN = "catppuccin",
+	VAGUE = "vague",
+}
+
+local function is_valid_color(color)
+	for _, c in pairs(COLORS) do
+		if c == color then
+			return true
+		end
 	end
+	return false
 end
 
----@type vim.Option
-local rtp = vim.opt.rtp
-rtp:prepend(lazypath)
-
-require("lazy").setup({
-	{ import = "kickstart.plugins" },
-}, {
-	ui = {
-		icons = vim.g.have_nerd_font and {} or {
-			cmd = "⌘",
-			config = "🛠",
-			event = "📅",
-			ft = "📂",
-			init = "⚙",
-			keys = "🗝",
-			plugin = "🔌",
-			runtime = "💻",
-			require = "🌙",
-			source = "📄",
-			start = "🚀",
-			task = "📌",
-			lazy = "💤 ",
-		},
-	},
-})
-
 function ColorMyPencils(color)
+	color = color or COLORS.ROSE_PINE_MOON
+
+	if not is_valid_color(color) then
+		vim.notify("Invalid colorscheme: " .. tostring(color), vim.log.levels.ERROR)
+		return
+	end
+
 	vim.cmd.colorscheme(color)
 
+	vim.cmd("hi statusline guibg=NONE")
 	vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
 	vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
 end
 
-ColorMyPencils()
+ColorMyPencils(COLORS.ROSE_PINE_MOON)
+vim.cmd("set completeopt+=menu,menuone,noselect")

@@ -1,9 +1,10 @@
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require("blink.cmp").get_lsp_capabilities(capabilities)
+local cmp_lsp = require("cmp_nvim_lsp")
+local capabilities =
+	vim.tbl_deep_extend("force", {}, vim.lsp.protocol.make_client_capabilities(), cmp_lsp.default_capabilities())
 
 local mason_data_path = vim.fn.stdpath("data")
 
-vim.lsp.enable({ "lua_ls", "ts_ls", "angularls", "pyright", "html", "omnisharp" })
+vim.lsp.enable({ "lua_ls", "ts_ls", "angularls", "pyright", "html", "omnisharp", "jdtls" })
 
 vim.lsp.config("lua_ls", {
 	capabilities = capabilities,
@@ -36,5 +37,10 @@ vim.lsp.config("omnisharp", {
 		"--languageserver",
 		"--hostPID",
 		tostring(vim.fn.getpid()),
+	},
+})
+vim.lsp.config("jdtls", {
+	settings = {
+		java = {},
 	},
 })

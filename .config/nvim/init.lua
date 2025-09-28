@@ -17,12 +17,12 @@ require("core.options")
 -- Plugins
 require("plugins")
 
--- LSP
-require("lsp")
-
 -- Core configs
 require("core.keymaps")
 require("core.autocmds")
+
+-- LSP
+require("lsp")
 
 local COLORS = {
 	ROSE_PINE = "rose-pine",

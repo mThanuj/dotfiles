@@ -11,7 +11,10 @@ map("n", "<ESC>", "<CMD>nohl<CR>", { desc = "Remove highlights" })
 map({ "n", "v", "x" }, "<leader>y", '"+y<CR>', { desc = "Yank to system clipboard" })
 map({ "n", "v", "x" }, "<leader>p", '"+p<CR>', { desc = "Paste from system clipboard" })
 
-local tb = require("telescope.builtin")
+local ok, tb = pcall(require, "telescope.builtin")
+if not ok then
+  return
+end
 map("n", "<leader>sa", tb.find_files, { desc = "Find files" })
 map("n", "<leader>sf", tb.git_files, { desc = "Git files" })
 map("n", "<leader>sg", tb.live_grep, { desc = "Live grep" })

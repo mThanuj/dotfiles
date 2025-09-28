@@ -14,7 +14,7 @@ return {
 				html = { "prettierd" },
 				cs = { "clang-format" },
 			},
-			format_on_save = { timeout_ms = 5000, lsp_format = "fallback" },
+			format_on_save = { timeout_ms = 500, lsp_format = "fallback" },
 			formatters = {
 				["clang-format"] = {
 					-- LLVM, GNU, Google, Chromium, Microsoft, Mozilla, WebKit

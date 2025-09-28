@@ -35,7 +35,6 @@ vim.opt.updatetime = 50
 vim.opt.colorcolumn = "100"
 
 vim.diagnostic.config({
-	-- update_in_insert = true,
 	float = {
 		focusable = false,
 		style = "minimal",

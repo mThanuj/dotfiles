@@ -1,5 +1,11 @@
 return {
 	{
+		"williamboman/mason.nvim",
+		config = function()
+			require("mason").setup()
+		end,
+	},
+	{
 		"neovim/nvim-lspconfig",
 		dependencies = {
 			"williamboman/mason.nvim",
@@ -14,8 +20,6 @@ return {
 
 		config = function()
 			local cmp = require("cmp")
-
-			require("mason").setup()
 
 			local cmp_select = { behavior = cmp.SelectBehavior.Select }
 
@@ -42,6 +46,9 @@ return {
 	},
 	{
 		"williamboman/mason-lspconfig.nvim",
+		dependencies = {
+			"williamboman/mason.nvim",
+		},
 		opts = {
 			automatic_enable = {
 				exclude = {
@@ -52,5 +59,11 @@ return {
 	},
 	{
 		"mfussenegger/nvim-jdtls",
+	},
+	{
+		"rafamadriz/friendly-snippets",
+		config = function()
+			require("luasnip.loaders.from_vscode").lazy_load()
+		end,
 	},
 }

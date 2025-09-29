@@ -1,15 +1,29 @@
+local lint = require("lint")
+
+-- Function that only lints valid buffers
+local function safe_lint()
+	local ft = vim.bo.filetype
+	local buftype = vim.bo.buftype
+
+	-- Skip special buffers (help, terminal, quickfix, etc.)
+	if buftype ~= "" then
+		return
+	end
+
+	-- Only lint if a linter exists for this filetype
+	if lint.linters_by_ft[ft] then
+		lint.try_lint()
+	end
+end
+
 -- Lint on insert leave
 vim.api.nvim_create_autocmd("InsertLeave", {
-	callback = function()
-		require("lint").try_lint()
-	end,
+	callback = safe_lint,
 })
 
 -- Lint on save
 vim.api.nvim_create_autocmd("BufWritePost", {
-	callback = function()
-		require("lint").try_lint()
-	end,
+	callback = safe_lint,
 })
 
 -- Restart LSP command

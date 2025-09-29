@@ -13,6 +13,7 @@ return {
 				python = { "isort", "black" },
 				html = { "prettierd" },
 				cs = { "clang-format" },
+				xml = { "xmlformatter" },
 			},
 			format_on_save = { timeout_ms = 500, lsp_format = "fallback" },
 			formatters = {
@@ -20,6 +21,16 @@ return {
 					-- LLVM, GNU, Google, Chromium, Microsoft, Mozilla, WebKit
 					args = {
 						"--style={BasedOnStyle: Google, IndentWidth: 4}",
+					},
+				},
+				xmlformatter = {
+					command = "xmlformat",
+					args = {
+						"--indent",
+						"4",
+						"--overwrite",
+						"--blanks",
+						"-",
 					},
 				},
 			},

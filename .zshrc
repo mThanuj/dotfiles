@@ -6,6 +6,8 @@ export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="gallifrey"
 
+export JDTLS_JVM_ARGS="-javaagent:$HOME/dotfiles/lombok.jar -Xbootclasspath/a:$HOME/dotfiles/lombok.jar"
+
 CASE_SENSITIVE="false"
 
 HYPHEN_INSENSITIVE="true"

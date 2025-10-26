@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+# SCRIPT 2: llm-verify - Verifies a specific task from the TODO list.
+
+# --- Dependency Check ---
+if ! command -v rg &> /dev/null; then
+    echo "❌ Error: 'ripgrep' (rg) is not installed. Please install it to continue." >&2
+    exit 1
+fi
+
+# --- Argument Validation ---
+if [[ -z "$1" || -z "$2" ]]; then
+  echo "Usage: llm-verify <model_name> <task_number>" >&2
+  echo "Example: llm-verify llama3 2" >&2
+  exit 1
+fi
+
+# --- State File Check ---
+if [[ ! -f ".review_tasks.md" ]]; then
+  echo "❌ Error: Task list '.review_tasks.md' not found. Run 'llm-generate' first." >&2
+  exit 1
+fi
+
+MODEL_NAME="$1"
+TASK_NUMBER="$2"
+
+# --- Get the specific task from the list ---
+TASK_DESCRIPTION=$(sed -n "${TASK_NUMBER}p" .review_tasks.md)
+if [[ -z "$TASK_DESCRIPTION" ]]; then
+  echo "❌ Error: Could not find task number ${TASK_NUMBER} in '.review_tasks.md'" >&2
+  exit 1
+fi
+
+echo "🎯 Verifying Task #${TASK_NUMBER}:"
+echo "${TASK_DESCRIPTION}"
+echo "-------------------------------------------"
+
+# --- File Gathering Logic (re-scans the project for changes) ---
+CONTEXT_STRING=""
+EXCLUDE_DIRS=("node_modules" ".git" ".venv" "dist" "build")
+EXCLUDE_REGEXES=('\.log$' 'bun\.lockb$' 'package-lock\.json$' '\.DS_Store$')
+RG_ARGS="--files"
+for dir in "${EXCLUDE_DIRS[@]}"; do RG_ARGS+=" --glob '!${dir}/**'"; done
+ALL_FILES=$(eval rg $RG_ARGS)
+FILTERED_FILES="$ALL_FILES"
+if [ ${#EXCLUDE_REGEXES[@]} -gt 0 ]; then
+    regex_pattern=$(printf "|%s" "${EXCLUDE_REGEXES[@]}"); regex_pattern=${regex_pattern:1}
+    FILTERED_FILES=$(echo "$ALL_FILES" | grep -vE "($regex_pattern)")
+fi
+
+while IFS= read -r file_path; do
+  [[ -z "$file_path" ]] && continue
+  if file "$file_path" | grep -q "text" || [[ "$file_path" =~ \.(ts|tsx|js|jsx|json|md|http|toml)$ ]]; then
+    CONTEXT_STRING+=$(printf "\n\n--- START OF FILE: %s ---\n\n" "$file_path")
+    CONTEXT_STRING+=$(cat "$file_path")
+    CONTEXT_STRING+=$(printf "\n--- END OF FILE: %s ---\n" "$file_path")
+  fi
+done <<< "$FILTERED_FILES"
+
+# --- Prompt for verifying a single task ---
+FINAL_PROMPT=$(cat <<EOF
+You are an expert code reviewer verifying a developer's fix.
+The developer was given the following task:
+"${TASK_DESCRIPTION}"
+
+Based on the updated project context below, has this task been successfully completed?
+- If YES, start your response with "✅ STATUS: FIXED" and briefly explain why the new code works.
+- If NO, start your response with "❌ STATUS: PENDING" and explain what is still missing or incorrect. Provide specific pointers for the developer to improve their fix.
+
+### UPDATED PROJECT CONTEXT ###
+${CONTEXT_STRING}
+### END OF CONTEXT ###
+EOF
+)
+
+echo "🚀 Asking model to verify your fix..."
+echo "-------------------------------------------"
+
+# --- EXECUTION ---
+ollama run "$MODEL_NAME" <<< "$FINAL_PROMPT"

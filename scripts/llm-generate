@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+# SCRIPT 1: llm-generate - Performs the initial review and creates a task list.
+
+# --- Configuration ---
+# 1. Add full directory paths from the project root to skip them entirely.
+EXCLUDE_DIRS=(
+  "node_modules"
+  ".git"
+  ".venv"
+  "dist"
+  "build"
+)
+
+# 2. Add any regex patterns to exclude specific files by their path.
+EXCLUDE_REGEXES=(
+  '\.log$'
+  'bun\.lockb$'
+  'package-lock\.json$'
+  '\.DS_Store$'
+)
+
+# --- Dependency Check ---
+if ! command -v rg &> /dev/null; then
+    echo "❌ Error: 'ripgrep' (rg) is not installed. Please install it to continue." >&2
+    exit 1
+fi
+
+# --- Argument Validation ---
+if [[ -z "$1" || -z "$2" ]]; then
+  echo "Usage: llm-generate <model_name> \"<your_question>\"" >&2
+  echo "Example: llm-generate llama3 \"Do a full review of my project\"" >&2
+  exit 1
+fi
+
+MODEL_NAME="$1"
+USER_PROMPT="$2"
+
+echo "🤖 Starting initial review..."
+
+# --- Build ripgrep arguments for directory exclusion ---
+RG_ARGS="--files"
+for dir in "${EXCLUDE_DIRS[@]}"; do
+  RG_ARGS+=" --glob '!${dir}/**'"
+done
+
+# --- Find initial file list using ripgrep ---
+ALL_FILES=$(eval rg $RG_ARGS)
+
+# --- Filter file list with regex patterns ---
+FILTERED_FILES="$ALL_FILES"
+if [ ${#EXCLUDE_REGEXES[@]} -gt 0 ]; then
+    regex_pattern=$(printf "|%s" "${EXCLUDE_REGEXES[@]}")
+    regex_pattern=${regex_pattern:1}
+    FILTERED_FILES=$(echo "$ALL_FILES" | grep -vE "($regex_pattern)")
+fi
+
+echo "📚 Gathering context from project files..."
+CONTEXT_STRING=""
+while IFS= read -r file_path; do
+  # Skip if file_path is empty
+  [[ -z "$file_path" ]] && continue
+  
+  # Check if the file is text-based
+  if file "$file_path" | grep -q "text" || [[ "$file_path" =~ \.(ts|tsx|js|jsx|json|md|http|toml)$ ]]; then
+    CONTEXT_STRING+=$(printf "\n\n--- START OF FILE: %s ---\n\n" "$file_path")
+    CONTEXT_STRING+=$(cat "$file_path")
+    CONTEXT_STRING+=$(printf "\n--- END OF FILE: %s ---\n" "$file_path")
+  fi
+done <<< "$FILTERED_FILES"
+
+# --- Prompt for generating a detailed review and a concise task list ---
+FINAL_PROMPT=$(cat <<EOF
+You are an expert tech lead conducting a code review.
+Your first task is to provide a detailed, structured analysis of the codebase provided below based on the user's request.
+Your second, most important task is to conclude your entire response with a section titled "### 📋 Actionable TODO List".
+Under that heading, create a concise, numbered list of the most critical tasks a developer should work on. Each task must be a single line.
+
+### PROJECT CONTEXT ###
+${CONTEXT_STRING}
+### END OF CONTEXT ###
+
+User's Request: "${USER_PROMPT}"
+
+(Your detailed analysis goes here, following the user's request...)
+
+### 📋 Actionable TODO List
+1. (First task)
+2. (Second task)
+3. (etc.)
+EOF
+)
+
+echo "🚀 Generating initial review and TODO list from model..."
+
+# Run the review, display it to the user, and save the full output to a file
+ollama run "$MODEL_NAME" <<< "$FINAL_PROMPT" | tee .llm_review_full.md
+
+# Extract just the TODO list for the verification script
+# This awk command finds the heading and prints every line after it
+awk '/### 📋 Actionable TODO List/{flag=1; next} flag' .llm_review_full.md > .review_tasks.md
+
+echo "-------------------------------------------"
+echo "✅ Review complete. Your actionable TODO list is saved in '.review_tasks.md'"

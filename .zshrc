@@ -1,6 +1,7 @@
 autoload -U colors && colors
 
-export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:~/.local/share/bob/nvim-bin:/home/mthanuj/.cargo/bin:$PATH
+export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:~/.local/share/bob/nvim-bin:$HOME/.cargo/bin:$PATH
+export PATH=$HOME/scripts:$PATH
 
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -20,7 +21,7 @@ DISABLE_AUTO_TITLE="true"
 
 ENABLE_CORRECTION="false"
 
-plugins=(git npm yarn docker bun)
+plugins=(git npm yarn docker bun mvn)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -338,3 +339,4 @@ compinit
 
 # Load Angular CLI autocompletion.
 source <(ng completion script)
+export AVANTE_GEMINI_API_KEY=AIzaSyALCmRpEiF6LzrIkQqL98wligg41P9eKwg

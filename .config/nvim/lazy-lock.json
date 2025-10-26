@@ -8,6 +8,8 @@
   "conform.nvim": { "branch": "master", "commit": "3bad87250ed85246fe8c5bc10005ab5a6289ae4c" },
   "fidget.nvim": { "branch": "main", "commit": "3f5475949679953af6d78654db29b944fa826e6a" },
   "friendly-snippets": { "branch": "main", "commit": "572f5660cf05f8cd8834e096d7b4c921ba18e175" },
+  "harpoon": { "branch": "harpoon2", "commit": "ed1f853847ffd04b2b61c314865665e1dadf22c7" },
+  "kulala.nvim": { "branch": "main", "commit": "183bf444bfffe957fdb83c5aac53b10cd4dced00" },
   "lazy.nvim": { "branch": "main", "commit": "6c3bda4aca61a13a9c63f1c1d1b16b9d3be90d7a" },
   "lazydev.nvim": { "branch": "main", "commit": "258d2a5ef4a3e3d6d9ba9da72c9725c53e9afcbd" },
   "mason-lspconfig.nvim": { "branch": "main", "commit": "f760507df8c49a4bf46a4d12e1fc616797508979" },
@@ -27,5 +29,6 @@
   "telescope.nvim": { "branch": "master", "commit": "b4da76be54691e854d3e0e02c36b0245f945c2c7" },
   "trouble.nvim": { "branch": "main", "commit": "f176232e7759c4f8abd923c21e3e5a5c76cd6837" },
   "undotree": { "branch": "master", "commit": "fe9a9d0645f0f5532360b5e5f5c550d7bb4f1869" },
-  "vague.nvim": { "branch": "main", "commit": "25107deb4221993429a4af404618fef066711cf3" }
+  "vague.nvim": { "branch": "main", "commit": "25107deb4221993429a4af404618fef066711cf3" },
+  "windsurf.nvim": { "branch": "main", "commit": "821b570b526dbb05b57aa4ded578b709a704a38a" }
 }

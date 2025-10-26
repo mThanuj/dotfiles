@@ -1,19 +1,19 @@
 local map = vim.keymap.set
 
 map("n", "<leader>so", "<CMD>w<CR><CMD>so<CR>", { desc = "Shout out the current file" })
-map("n", "<leader>w", "<CMD>w<CR>", { desc = "Write buffer" })
-map("n", "<leader>q", "<CMD>q<CR>", { desc = "Quit buffer" })
 map("n", "<C-d>", "<C-d>zz", { desc = "Scroll down & center" })
 map("n", "<C-u>", "<C-u>zz", { desc = "Scroll up & center" })
 map("n", "n", "nzzzv", { desc = "Next instance & center" })
 map("n", "N", "Nzzzv", { desc = "Previous instance & center" })
+map("n", "E", "$", { desc = "Move to end" })
+map("n", "B", "^", { desc = "Move to beginning" })
 map("n", "<ESC>", "<CMD>nohl<CR>", { desc = "Remove highlights" })
 map({ "n", "v", "x" }, "<leader>y", '"+y<CR>', { desc = "Yank to system clipboard" })
 map({ "n", "v", "x" }, "<leader>p", '"+p<CR>', { desc = "Paste from system clipboard" })
 
 local ok, tb = pcall(require, "telescope.builtin")
 if not ok then
-  return
+	return
 end
 map("n", "<leader>sa", tb.find_files, { desc = "Find files" })
 map("n", "<leader>sf", tb.git_files, { desc = "Git files" })
@@ -45,3 +45,17 @@ map("n", "<C-h>", "<C-w><C-h>", { desc = "Move left" })
 map("n", "<C-l>", "<C-w><C-l>", { desc = "Move right" })
 map("n", "<C-j>", "<C-w><C-j>", { desc = "Move down" })
 map("n", "<C-k>", "<C-w><C-k>", { desc = "Move up" })
+
+map({ "n", "v" }, "<leader>ks", function()
+	require("kulala").run()
+end, { desc = "Kulala (Send Request)" })
+map({ "n", "v" }, "<leader>ka", function()
+	require("kulala").run_all()
+end, { desc = "Kulala (Send All Requests)" })
+map({ "n", "v" }, "<leader>kr", function()
+	require("kulala").replay()
+end, { desc = "Kulala (Replay)" })
+
+map("n", "<leader>rn", function()
+	vim.lsp.buf.rename()
+end, { desc = "Move up" })

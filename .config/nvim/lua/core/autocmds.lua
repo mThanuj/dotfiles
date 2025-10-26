@@ -1,16 +1,13 @@
 local lint = require("lint")
 
--- Function that only lints valid buffers
 local function safe_lint()
 	local ft = vim.bo.filetype
 	local buftype = vim.bo.buftype
 
-	-- Skip special buffers (help, terminal, quickfix, etc.)
 	if buftype ~= "" then
 		return
 	end
 
-	-- Only lint if a linter exists for this filetype
 	if lint.linters_by_ft[ft] then
 		lint.try_lint()
 	end

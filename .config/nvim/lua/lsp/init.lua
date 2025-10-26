@@ -42,7 +42,18 @@ local on_attach = function(client, bufnr)
 	map("n", "[d", vim.diagnostic.goto_prev, "Previous Diagnostic")
 end
 
-vim.lsp.enable({ "lua_ls", "ts_ls", "angularls", "pyright", "html", "omnisharp", "jdtls", "lemminx", "prismals" })
+vim.lsp.enable({
+	"lua_ls",
+	"ts_ls",
+	"angularls",
+	"pyright",
+	"html",
+	"omnisharp",
+	"jdtls",
+	"lemminx",
+	"prismals",
+	"tailwindcss",
+})
 
 vim.lsp.config("lua_ls", {
 	capabilities = capabilities,
@@ -56,6 +67,10 @@ vim.lsp.config("lua_ls", {
 	},
 })
 vim.lsp.config("ts_ls", {
+	capabilities = capabilities,
+	on_attach = on_attach,
+})
+vim.lsp.config("tailwindcss", {
 	capabilities = capabilities,
 	on_attach = on_attach,
 })

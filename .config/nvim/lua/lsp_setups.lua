@@ -4,42 +4,40 @@ local capabilities =
 
 local mason_data_path = vim.fn.stdpath("data")
 
-local on_attach = function(client, bufnr)
+local on_attach = function(_, bufnr)
 	local function map(mode, lhs, rhs, desc)
 		vim.keymap.set(mode, lhs, rhs, { noremap = true, silent = true, buffer = bufnr, desc = "LSP: " .. desc })
 	end
 
-	map("n", "gd", vim.lsp.buf.definition, "Go to Definition")
-
-	-- Go to Declaration
-	map("n", "gD", vim.lsp.buf.declaration, "Go to Declaration")
-
-	-- Go to Implementation
-	map("n", "gi", vim.lsp.buf.implementation, "Go to Implementation")
-
-	-- Go to Type Definition
-	map("n", "gt", vim.lsp.buf.type_definition, "Go to Type Definition")
-
-	-- Show hover documentation
-	map("n", "K", vim.lsp.buf.hover, "Show Hover Documentation")
-
-	-- Show signature help
-	map("i", "<C-k>", vim.lsp.buf.signature_help, "Show Signature Help")
-
-	-- Find all references
-	map("n", "gr", vim.lsp.buf.references, "Go to References")
-
-	-- Code actions (e.g., "quick fix")
 	map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, "Code Actions")
 
-	-- Show buffer diagnostics
+	map("n", "gd", vim.lsp.buf.definition, "Go to Definition")
+
+	map("n", "gD", vim.lsp.buf.declaration, "Go to Declaration")
+
+	map("n", "gi", vim.lsp.buf.implementation, "Go to Implementation")
+
+	map("n", "gt", vim.lsp.buf.type_definition, "Go to Type Definition")
+
+	map("n", "K", vim.lsp.buf.hover, "Show Hover Documentation")
+
+	map("i", "<C-k>", vim.lsp.buf.signature_help, "Show Signature Help")
+
+	map("n", "gr", vim.lsp.buf.references, "Go to References")
+
+	map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, "Code Actions")
+
 	map("n", "<leader>d", vim.diagnostic.open_float, "Show Buffer Diagnostics")
 
-	-- Go to the next diagnostic
-	map("n", "]d", vim.diagnostic.goto_next, "Next Diagnostic")
+	map("n", "<leader>rn", vim.lsp.buf.rename, "LSP Rename")
 
-	-- Go to the previous diagnostic
-	map("n", "[d", vim.diagnostic.goto_prev, "Previous Diagnostic")
+	map("n", "]d", function()
+		vim.diagnostic.jump({ count = 1 })
+	end, "Next Diagnostic")
+
+	map("n", "[d", function()
+		vim.diagnostic.jump({ count = -1 })
+	end, "Previous Diagnostic")
 end
 
 vim.lsp.enable({
@@ -48,11 +46,12 @@ vim.lsp.enable({
 	"angularls",
 	"pyright",
 	"html",
-	"omnisharp",
 	"jdtls",
 	"lemminx",
 	"prismals",
 	"tailwindcss",
+	"dockerls",
+	"docker_compose_language_service",
 })
 
 vim.lsp.config("lua_ls", {
@@ -70,6 +69,14 @@ vim.lsp.config("ts_ls", {
 	capabilities = capabilities,
 	on_attach = on_attach,
 })
+vim.lsp.config("dockerls", {
+	capabilities = capabilities,
+	on_attach = on_attach,
+})
+vim.lsp.config("docker_compose_language_service", {
+	capabilities = capabilities,
+	on_attach = on_attach,
+})
 vim.lsp.config("tailwindcss", {
 	capabilities = capabilities,
 	on_attach = on_attach,
@@ -84,26 +91,26 @@ vim.lsp.config("angularls", {
 })
 vim.lsp.config("pyright", {
 	capabilities = capabilities,
-	cmd = { mason_data_path .. "/mason/bin/pyright", "--stdio" },
+	cmd = { mason_data_path .. "/mason/bin/pyright-langserver", "--stdio" },
 	on_attach = on_attach,
 })
 vim.lsp.config("html", {
 	capabilities = capabilities,
 	on_attach = on_attach,
 })
-vim.lsp.config("omnisharp", {
-	capabilities = capabilities,
-	cmd = {
-		mason_data_path .. "/mason/packages/omnisharp/OmniSharp",
-		"--languageserver",
-		"--hostPID",
-		tostring(vim.fn.getpid()),
-	},
-	on_attach = on_attach,
-})
 vim.lsp.config("jdtls", {
 	settings = {
-		java = {},
+		java = {
+			configuration = {
+				runtimes = {
+					{
+						name = "JavaSE-25",
+						path = "/usr/lib/jvm/java-25-openjdk",
+						default = true,
+					},
+				},
+			},
+		},
 	},
 
 	-- add this to .zshrc

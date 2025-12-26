@@ -1697,3 +1697,5 @@ if [ "$funcstack[1]" = "_spotify_player" ]; then
 else
     compdef _spotify_player spotify_player
 fi
+
+export PRETTIERD_DEFAULT_CONFIG="$HOME/dotfiles/.config/prettier.json"

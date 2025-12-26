@@ -52,6 +52,7 @@ vim.lsp.enable({
 	"tailwindcss",
 	"dockerls",
 	"docker_compose_language_service",
+	"cssls",
 })
 
 vim.lsp.config("lua_ls", {
@@ -66,6 +67,10 @@ vim.lsp.config("lua_ls", {
 	},
 })
 vim.lsp.config("ts_ls", {
+	capabilities = capabilities,
+	on_attach = on_attach,
+})
+vim.lsp.config("cssls", {
 	capabilities = capabilities,
 	on_attach = on_attach,
 })

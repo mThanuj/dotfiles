@@ -1699,3 +1699,5 @@ else
 fi
 
 export PRETTIERD_DEFAULT_CONFIG="$HOME/dotfiles/.config/prettier.json"
+
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"

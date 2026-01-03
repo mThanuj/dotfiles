@@ -1,13 +1,10 @@
 autoload -U colors && colors
 
-export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:~/.local/share/bob/nvim-bin:$HOME/.cargo/bin:$PATH
-export PATH=$HOME/scripts:$PATH
 
 export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="gallifrey"
 
-export JDTLS_JVM_ARGS="-javaagent:$HOME/dotfiles/lombok.jar -Xbootclasspath/a:$HOME/dotfiles/lombok.jar"
 
 CASE_SENSITIVE="false"
 
@@ -33,12 +30,14 @@ else
   export EDITOR='nvim'
 fi
 
+export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:~/.local/share/bob/nvim-bin:$HOME/.cargo/bin:$PATH
+export PATH=$HOME/scripts:$PATH
+export JDTLS_JVM_ARGS="-javaagent:$HOME/dotfiles/lombok.jar -Xbootclasspath/a:$HOME/dotfiles/lombok.jar"
+
 export NVM_DIR="$HOME/.config/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-HISTSIZE=10000
-SAVEHIST=10000
 source <(fzf --zsh)
 
 
@@ -50,7 +49,6 @@ case ":$PATH:" in
 esac
 # pnpm end
 
-eval "$(zoxide init zsh --cmd cd)"
 
 
 export PATH=$PATH:/home/mthanuj/.spicetify
@@ -348,7 +346,6 @@ export PATH=$PATH:$DOTNET_ROOT/tools
 export PATH="$PATH:/home/mthanuj/.dotnet/tools"
 
 alias spot=spotify_player
-
 
 #compdef spotify_player
 
@@ -1701,3 +1698,5 @@ fi
 export PRETTIERD_DEFAULT_CONFIG="$HOME/dotfiles/.config/prettier.json"
 
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+eval "$(zoxide init zsh --cmd cd)"

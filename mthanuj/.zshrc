@@ -32,7 +32,7 @@ fi
 
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:~/.local/share/bob/nvim-bin:$HOME/.cargo/bin:$PATH
 export PATH=$HOME/scripts:$PATH
-export JDTLS_JVM_ARGS="-javaagent:$HOME/dotfiles/lombok.jar -Xbootclasspath/a:$HOME/dotfiles/lombok.jar"
+export JDTLS_JVM_ARGS="-javaagent:$HOME/lombok.jar -Xbootclasspath/a:$HOME/lombok.jar"
 
 export NVM_DIR="$HOME/.config/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"

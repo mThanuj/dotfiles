@@ -21,13 +21,20 @@ vim.pack.add({
 	{ src = "https://github.com/rafamadriz/friendly-snippets" },
 	{ src = "https://github.com/Exafunction/windsurf.nvim" },
 	{ src = "https://github.com/stevearc/conform.nvim" },
+	{ src = "https://github.com/iamcco/markdown-preview.nvim.git" },
+	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim.git" },
 })
+
+vim.cmd("packloadall")
 
 require("vague").setup({
 	transparent = true,
 })
+require("render-markdown").setup({})
 require("oil").setup({})
-require("telescope").setup({})
+require("telescope").setup({
+	defaults = { file_ignore_patterns = { "node_modules" } },
+})
 require("kulala").setup({
 	ui = {
 		win_opts = {
@@ -47,6 +54,7 @@ require("kulala").setup({
 		},
 	},
 })
+
 require("mason").setup()
 require("mason-lspconfig").setup({
 	automatic_enable = {
@@ -112,15 +120,20 @@ cmp.setup({
 require("conform").setup({
 	formatters_by_ft = {
 		lua = { "stylua" },
-		javascript = { "prettierd" },
-		typescript = { "prettierd" },
-		javascriptreact = { "prettierd" },
-		typescriptreact = { "prettierd" },
+		javascript = { "prettier" },
+		typescript = { "prettier" },
+		markdown = { "prettier" },
+		javascriptreact = { "prettier" },
+		typescriptreact = { "prettier" },
 		python = { "isort", "black" },
-		html = { "prettierd" },
+		html = { "prettier" },
+		yaml = { "prettier" },
+		json = { "prettier" },
+		yml = { "prettier" },
 		cs = { "clang-format" },
 		xml = { "xmlformatter" },
 		java = { "google-java-format" },
+		sql = {},
 	},
 	format_on_save = { timeout_ms = 500, lsp_format = "fallback" },
 	formatters = {
@@ -142,6 +155,8 @@ require("conform").setup({
 		},
 	},
 })
+
+vim.fn["mkdp#util#install"]()
 
 vim.g.mapleader = " "
 
@@ -226,16 +241,6 @@ vim.keymap.set("n", "<leader>sW", function()
 	builtin.grep_string({ search = word })
 end, { desc = "Search WORD under cursor" })
 
-vim.keymap.set({ "n", "v" }, "<leader>ks", function()
-	require("kulala").run()
-end, { desc = "Kulala (Send Request)" })
-vim.keymap.set({ "n", "v" }, "<leader>ka", function()
-	require("kulala").run_all()
-end, { desc = "Kulala (Send All Requests)" })
-vim.keymap.set({ "n", "v" }, "<leader>kr", function()
-	require("kulala").replay()
-end, { desc = "Kulala (Replay)" })
-
 local harpoon = require("harpoon")
 vim.keymap.set("n", "<leader>a", function()
 	harpoon:list():add()
@@ -256,6 +261,9 @@ end)
 vim.keymap.set("n", "<M-4>", function()
 	harpoon:list():select(4)
 end)
+vim.keymap.set("n", "<M-5>", function()
+	harpoon:list():select(4)
+end)
 
 vim.keymap.set("n", "<C-S-P>", function()
 	harpoon:list():prev()
@@ -263,6 +271,21 @@ end)
 vim.keymap.set("n", "<C-S-N>", function()
 	harpoon:list():next()
 end)
+
+vim.keymap.set(
+	"n",
+	"<leader>kg",
+	"<cmd>lua require('kulala').download_graphql_schema()<cr>",
+	{ desc = "Download GraphQL schema" }
+)
+vim.keymap.set("n", "<leader>ki", "<cmd>lua require('kulala').inspect()<cr>", { desc = "Inspect current request" })
+vim.keymap.set("n", "]r", "<cmd>lua require('kulala').jump_next()<cr>", { desc = "Jump to next request" })
+vim.keymap.set("n", "[r", "<cmd>lua require('kulala').jump_prev()<cr>", { desc = "Jump to previous request" })
+vim.keymap.set("n", "<leader>kq", "<cmd>lua require('kulala').close()<cr>", { desc = "Close window" })
+vim.keymap.set("n", "<leader>kr", "<cmd>lua require('kulala').run()<cr>", { desc = "Send the request" })
+vim.keymap.set("n", "<leader>ks", "<cmd>lua require('kulala').show_stats()<cr>", { desc = "Show stats" })
+vim.keymap.set("n", "<leader>kv", "<cmd>lua require('kulala').toggle_view()<cr>", { desc = "Toggle headers/body" })
+vim.keymap.set("n", "<leader>ke", "<cmd>lua require('kulala').set_selected_env()<cr>", { desc = "promt environments" })
 
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to Definition" })
 vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to Declaration" })
@@ -275,9 +298,34 @@ vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "Co
 vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Show Buffer Diagnostics" })
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Next Diagnostic" })
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous Diagnostic" })
+vim.keymap.set("n", "<leader>oi", function()
+	vim.lsp.buf.code_action({
+		apply = true,
+		context = { only = { "source.organizeImports" } },
+	})
+end, { desc = "Organize Imports" })
 
 vim.lsp.enable({
 	"lua_ls",
+	"vtsls",
+	"html-lsp",
+	"angularls",
+})
+
+vim.lsp.config("angularls", {
+	settings = {
+		angular = {
+			enable = true,
+		},
+	},
+})
+
+vim.lsp.config("html-lsp", {
+	settings = {
+		html = {
+			validate = true,
+		},
+	},
 })
 
 vim.lsp.config("lua_ls", {
@@ -294,6 +342,21 @@ vim.lsp.config("lua_ls", {
 			},
 			telemetry = {
 				enable = false,
+			},
+		},
+	},
+})
+vim.lsp.config("vtsls", {
+	settings = {
+		typescript = {
+			inlayHints = {
+				includeInlayParameterNameHints = "all",
+				includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+				includeInlayFunctionParameterTypeHints = true,
+				includeInlayVariableTypeHints = true,
+				includeInlayPropertyDeclarationTypeHints = true,
+				includeInlayFunctionLikeReturnTypeHints = true,
+				includeInlayEnumMemberValueHints = true,
 			},
 		},
 	},

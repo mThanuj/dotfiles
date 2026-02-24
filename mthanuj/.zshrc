@@ -336,8 +336,8 @@ compinit
 
 
 # Load Angular CLI autocompletion.
-source <(ng completion script)
-export AVANTE_GEMINI_API_KEY=AIzaSyALCmRpEiF6LzrIkQqL98wligg41P9eKwg
+# source <(ng completion script)
+# export AVANTE_GEMINI_API_KEY=AIzaSyALCmRpEiF6LzrIkQqL98wligg41P9eKwg
 
 export DOTNET_ROOT=/usr/bin/dotnet
 export PATH=$PATH:$DOTNET_ROOT

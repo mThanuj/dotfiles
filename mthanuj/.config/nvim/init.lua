@@ -200,6 +200,7 @@ vim.opt.colorcolumn = "100"
 
 vim.diagnostic.config({
 	virtual_text = true,
+	-- update_in_insert = false,
 })
 
 vim.keymap.set("n", "<leader>so", "<CMD>w<CR><CMD>so<CR>", { desc = "Source file" })
@@ -310,6 +311,7 @@ vim.lsp.enable({
 	"vtsls",
 	"html-lsp",
 	"angularls",
+	"rust-analyzer",
 })
 
 vim.lsp.config("angularls", {
@@ -358,6 +360,16 @@ vim.lsp.config("vtsls", {
 				includeInlayFunctionLikeReturnTypeHints = true,
 				includeInlayEnumMemberValueHints = true,
 			},
+		},
+	},
+})
+vim.lsp.config("rust_analyzer", {
+	settings = {
+		["rust-analyzer"] = {
+			cargo = {
+				allFeatures = true,
+			},
+			checkOnSave = true,
 		},
 	},
 })

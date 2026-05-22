@@ -89,7 +89,7 @@ alias ls='eza --icons -1 --group-directories-first'
 alias vi='nvim'
 alias ta='tmux attach'
 
-. "$HOME/.atuin/bin/env"
+# . "$HOME/.atuin/bin/env"
 
 eval "$(atuin init zsh)"
 eval "$(atuin init zsh --disable-up-arrow)"
